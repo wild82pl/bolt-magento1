@@ -209,6 +209,18 @@ class Bolt_Boltpay_Model_ShippingAndTax extends Bolt_Boltpay_Model_Abstract
                         $i < count($discounts);
                         $originalDiscountTotal += $discounts[$i]->amount/100, $i++
                     );
+
+                    // TODO: check the best way to recalculate discount and shipping amount.
+                    if ($quote->getUseCustomerBalance() && $quote->getCustomerId()) {
+//                        $originalDiscountTotal -= $quote->getCustomerBalanceAmountUsed();
+                        /** @var Enterprise_CustomerBalance_Model_Balance $customerBalance */
+                        $customerBalance = Mage::getModel('enterprise_customerbalance/balance');
+                        $customerBalance->setCustomerId($quote->getCustomerId());
+                        $customerBalance->loadByCustomer();
+                        if ($customerBalance->getAmount() > 0) {
+                            $originalDiscountTotal -= $customerBalance->getAmount();
+                        }
+                    }
                 }
             }
 
@@ -288,6 +300,9 @@ class Bolt_Boltpay_Model_ShippingAndTax extends Bolt_Boltpay_Model_Abstract
      */
     public function applyShippingRate($quote, $shippingRateCode, $shouldRecalculateShipping = true ) {
 
+        Mage::log('# Debug: applyShippingRate', true, 'bolt-debug.log');
+        Mage::log($quote->getId(), true, 'bolt-debug.log');
+        Mage::log('shouldRecalculateShipping: ' .($shouldRecalculateShipping ? "Yes" : "No"), true, 'bolt-debug.log');
         $shippingAddress = $quote->getShippingAddress();
 
         if (!empty($shippingAddress)) {
@@ -355,14 +370,20 @@ class Bolt_Boltpay_Model_ShippingAndTax extends Bolt_Boltpay_Model_Abstract
      *
      * @return float    Discount modified as a result of the new shipping method
      */
-    public function getAdjustedShippingAmount($originalDiscountTotal, $quote ) {
+    public function getAdjustedShippingAmount($originalDiscountTotal, $quote )
+    {
         $newDiscountTotal = $quote->getSubtotal() - $quote->getSubtotalWithDiscount();
+        Mage::log('# Debug: $newDiscountTotal: ' . $newDiscountTotal, true, 'bolt-debug.log');
         $adjustedShippingAmount = $quote->getShippingAddress()->getShippingAmount() + $originalDiscountTotal - $newDiscountTotal;
+        Mage::log('# Debug: $originalDiscountTotal: ' . $originalDiscountTotal, true, 'bolt-debug.log');
+        Mage::log('# Debug: $adjustedShippingAmount: ' . $adjustedShippingAmount, true, 'bolt-debug.log');
+
+        // TODO: collect data from customer_balance (used and total amount) and calculate shipping_amount.
 
         return $this->boltHelper()->doFilterEvent(
             'bolt_boltpay_filter_adjusted_shipping_amount',
             $adjustedShippingAmount,
-            array('originalDiscountTotal' => $originalDiscountTotal, 'quote'=>$quote)
+            array('originalDiscountTotal' => $originalDiscountTotal, 'quote' => $quote)
         );
     }
 

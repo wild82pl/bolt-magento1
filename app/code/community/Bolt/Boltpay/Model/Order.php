@@ -711,6 +711,21 @@ class Bolt_Boltpay_Model_Order extends Bolt_Boltpay_Model_Abstract
 
         if ($transaction->shouldDoDiscountTotalValidation) {
             $magentoDiscountTotal = (int)(($immutableQuote->getBaseSubtotal() - $immutableQuote->getBaseSubtotalWithDiscount()) * 100);
+            if ($immutableQuote->getUseCustomerBalance() && $immutableQuote->getCustomerId()) {
+//                $magentoDiscountTotal -= $immutableQuote->getCustomerBalanceAmountUsed() * 100;
+                /** @var Enterprise_CustomerBalance_Model_Balance $customerBalance */
+                $customerBalance = Mage::getModel('enterprise_customerbalance/balance');
+                $customerBalance->setCustomerId($immutableQuote->getCustomerId());
+                $customerBalance->loadByCustomer();
+                if ($customerBalance->getAmount() > 0) {
+                    $amount = $customerBalance->getAmount() * 100;
+                    if ($magentoDiscountTotal > $amount) {
+                        $magentoDiscountTotal -= $amount;
+                    } else {
+                        $magentoDiscountTotal = $amount;
+                    }
+                }
+            }
             $boltDiscountTotal = (int)$transaction->order->cart->discount_amount->amount;
             $difference = abs($magentoDiscountTotal - $boltDiscountTotal);
             if ( $difference > $priceFaultTolerance ) {
