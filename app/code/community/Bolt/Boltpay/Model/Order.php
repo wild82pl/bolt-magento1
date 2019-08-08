@@ -720,9 +720,9 @@ class Bolt_Boltpay_Model_Order extends Bolt_Boltpay_Model_Abstract
                 if ($customerBalance->getAmount() > 0) {
                     $amount = $customerBalance->getAmount() * 100;
                     if ($magentoDiscountTotal > $amount) {
-                        $magentoDiscountTotal -= $amount;
+                        $magentoDiscountTotal -= (int)$amount;
                     } else {
-                        $magentoDiscountTotal = $amount;
+                        $magentoDiscountTotal = (int)$amount;
                     }
                 }
             }
