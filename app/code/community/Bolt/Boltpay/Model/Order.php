@@ -860,7 +860,13 @@ class Bolt_Boltpay_Model_Order extends Bolt_Boltpay_Model_Abstract
     {
         try {
             if (!$order->getEmailSent()) {
-                $order->queueNewOrderEmail();
+                // Backward compatibility for older version. It is better use
+                // only sendNewOrderEmail() instead of queueNewOrderEmail()
+                if (method_exists($order, 'queueNewOrderEmail')) {
+                    $order->queueNewOrderEmail();
+                } else {
+                    $order->sendNewOrderEmail();
+                }
                 $history = $order->addStatusHistoryComment( $this->boltHelper()->__('Email sent for order %s', $order->getIncrementId()) );
                 $history->setIsCustomerNotified(true);
             }

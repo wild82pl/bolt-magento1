@@ -25,6 +25,7 @@
         <Mage_Sales/>
         <Mage_Checkout/>
         <Enterprise_CustomerBalance/>
+        <Iparcel_GlobaleCommerce/>
       </depends>
     </Bolt_Boltpay>
   </modules>

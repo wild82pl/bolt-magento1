@@ -212,7 +212,6 @@ class Bolt_Boltpay_Model_ShippingAndTax extends Bolt_Boltpay_Model_Abstract
 
                     // TODO: check the best way to recalculate discount and shipping amount.
                     if ($quote->getUseCustomerBalance() && $quote->getCustomerId()) {
-//                        $originalDiscountTotal -= $quote->getCustomerBalanceAmountUsed();
                         /** @var Enterprise_CustomerBalance_Model_Balance $customerBalance */
                         $customerBalance = Mage::getModel('enterprise_customerbalance/balance');
                         $customerBalance->setCustomerId($quote->getCustomerId());
@@ -298,11 +297,8 @@ class Bolt_Boltpay_Model_ShippingAndTax extends Bolt_Boltpay_Model_Abstract
      * @param string                 $shippingRateCode          Shipping rate code composed of {carrier}_{method}
      * @param bool                   $shouldRecalculateShipping Determines if shipping should be recalculated
      */
-    public function applyShippingRate($quote, $shippingRateCode, $shouldRecalculateShipping = true ) {
-
-        Mage::log('# Debug: applyShippingRate', true, 'bolt-debug.log');
-        Mage::log($quote->getId(), true, 'bolt-debug.log');
-        Mage::log('shouldRecalculateShipping: ' .($shouldRecalculateShipping ? "Yes" : "No"), true, 'bolt-debug.log');
+    public function applyShippingRate($quote, $shippingRateCode, $shouldRecalculateShipping = true )
+    {
         $shippingAddress = $quote->getShippingAddress();
 
         if (!empty($shippingAddress)) {
