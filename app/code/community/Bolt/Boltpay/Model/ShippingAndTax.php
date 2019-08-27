@@ -220,6 +220,11 @@ class Bolt_Boltpay_Model_ShippingAndTax extends Bolt_Boltpay_Model_Abstract
                             $originalDiscountTotal -= $customerBalance->getAmount();
                         }
                     }
+                    // For Mirasvist_Rewardpoints module.
+                    $parentShipAddress = $parentQuote->getShippingAddress();
+                    if ($parentShipAddress->getRewardpointsDiscount() && $parentShipAddress->getRewardpointsDiscount() > 0) {
+                        $originalDiscountTotal -= $parentShipAddress->getRewardpointsDiscount();
+                    }
                 }
             }
 

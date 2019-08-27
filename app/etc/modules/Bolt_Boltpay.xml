@@ -26,6 +26,8 @@
         <Mage_Checkout/>
         <Enterprise_CustomerBalance/>
         <Iparcel_GlobaleCommerce/>
+        <Magestore_RewardPoints/>
+        <Tadashi_RewardPointsExtended/>
       </depends>
     </Bolt_Boltpay>
   </modules>

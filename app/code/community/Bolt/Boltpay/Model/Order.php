@@ -717,6 +717,17 @@ class Bolt_Boltpay_Model_Order extends Bolt_Boltpay_Model_Abstract
                     }
                 }
             }
+
+            // For Mirasvist_Rewardpoints module.
+            if ($immutableQuote->getRewardpointsDiscount() > 0) {
+                $amount = $immutableQuote->getRewardpointsDiscount() * 100;
+                if ($magentoDiscountTotal > 0) {
+                    $magentoDiscountTotal += (int)$amount;
+                } else {
+                    $magentoDiscountTotal = (int)$amount;
+                }
+            }
+
             $boltDiscountTotal = (int)$transaction->order->cart->discount_amount->amount;
             $difference = abs($magentoDiscountTotal - $boltDiscountTotal);
             if ( $difference > $priceFaultTolerance ) {

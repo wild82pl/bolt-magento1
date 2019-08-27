@@ -21,6 +21,9 @@
   <modules>
     <Bolt_Boltpay>
       <version>2.0.1</version> <!-- version number should be incremented appropriately  -->
+      <depends>
+        <Magestore_Rewardpoints />
+      </depends>
     </Bolt_Boltpay>
   </modules>
 
@@ -100,6 +103,10 @@
           <bolt_boltpay_validate_order_before_commit>
             <class>Bolt_Boltpay_Model_Observer</class>
             <method>validateBeforeOrderCommit</method>
+            <depends>
+              <Magestore_Rewardpoints />
+              <Tadashi_RewardPointsExtended />
+            </depends>
           </bolt_boltpay_validate_order_before_commit>
         </observers>
       </sales_model_service_quote_submit_before>
@@ -127,6 +134,10 @@
             <type>singleton</type>
             <class>Bolt_Boltpay_Model_Observer</class>
             <method>safeguardPreAuthStatus</method>
+            <depends>
+              <Magestore_Rewardpoints />
+              <Tadashi_RewardPointsExtended />
+            </depends>
           </bolt_boltpay_safeguard_preauth_status>
         </observers>
       </sales_order_save_before>
