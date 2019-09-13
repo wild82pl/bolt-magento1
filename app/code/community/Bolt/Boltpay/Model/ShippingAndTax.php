@@ -374,10 +374,7 @@ class Bolt_Boltpay_Model_ShippingAndTax extends Bolt_Boltpay_Model_Abstract
     public function getAdjustedShippingAmount($originalDiscountTotal, $quote )
     {
         $newDiscountTotal = $quote->getSubtotal() - $quote->getSubtotalWithDiscount();
-        Mage::log('# Debug: $newDiscountTotal: ' . $newDiscountTotal, true, 'bolt-debug.log');
         $adjustedShippingAmount = $quote->getShippingAddress()->getShippingAmount() + $originalDiscountTotal - $newDiscountTotal;
-        Mage::log('# Debug: $originalDiscountTotal: ' . $originalDiscountTotal, true, 'bolt-debug.log');
-        Mage::log('# Debug: $adjustedShippingAmount: ' . $adjustedShippingAmount, true, 'bolt-debug.log');
 
         // TODO: collect data from customer_balance (used and total amount) and calculate shipping_amount.
 
