@@ -688,7 +688,6 @@ class Bolt_Boltpay_Model_BoltOrder extends Bolt_Boltpay_Model_Abstract
      */
     public function getCachedCartData($quote, $checkoutType)
     {
-
         $cachedCartDataJS = Mage::getSingleton('core/session')->getCachedCartData();
 
         if (
@@ -762,6 +761,14 @@ class Bolt_Boltpay_Model_BoltOrder extends Bolt_Boltpay_Model_Abstract
             if (!$this->validateVirtualQuote($quote)){
                 return json_decode('{"token" : "", "error": "'.$this->boltHelper()->__('Billing address is required.').'"}');
             }
+        }
+
+        if ($checkoutType === Bolt_Boltpay_Block_Checkout_Boltpay::CHECKOUT_TYPE_ADMIN) {
+            Mage::register('rule_data', new Varien_Object(array(
+                'store_id' => $quote->getStore()->getId(),
+                'website_id' => $quote->getStore()->getWebsiteId(),
+                'customer_group_id' => $quote->getCustomerGroupId(),
+            )));
         }
 
         // Generates order data for sending to Bolt create order API.

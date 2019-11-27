@@ -333,13 +333,14 @@ class Bolt_Boltpay_Block_Checkout_Boltpay extends Mage_Checkout_Block_Onepage_Re
      */
     public function getReservedUserId($quote)
     {
-
+        /** @var Mage_Customer_Model_Session $session */
         $session = Mage::getSingleton('customer/session');
         $checkout = Mage::getSingleton('checkout/type_onepage');
 
         $checkoutMethod = $checkout->getCheckoutMethod();
 
         if ($session->isLoggedIn()) {
+            /** @var Mage_Customer_Model_Customer $customer */
             $customer = Mage::getModel('customer/customer')->load($session->getId());
 
             if ($customer->getBoltUserId() == 0 || $customer->getBoltUserId() == null) {
