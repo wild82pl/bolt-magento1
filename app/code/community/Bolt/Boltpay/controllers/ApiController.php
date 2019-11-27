@@ -55,7 +55,7 @@ class Bolt_Boltpay_ApiController extends Mage_Core_Controller_Front_Action imple
                 $this->handleDiscountHook();
                 return;
             }
-
+            $transaction = $this->boltHelper()->fetchTransaction($reference);
             /* If display_id has been confirmed and updated on Bolt, then we should look up the order by display_id */
             $order = Mage::getModel('sales/order')->loadByIncrementId($incrementId);
 
@@ -71,10 +71,6 @@ class Bolt_Boltpay_ApiController extends Mage_Core_Controller_Front_Action imple
                 // Order was found.  We will update it
                 ///////////////////////////////////////
                 Mage::app()->setCurrentStore($order->getStore());
-
-                if (empty($transaction) && $hookType !== 'pending') {
-                    $transaction = $this->boltHelper()->fetchTransaction($reference);
-                }
 
                 $orderPayment = $order->getPayment();
                 if (
