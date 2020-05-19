@@ -281,6 +281,20 @@ class Bolt_Boltpay_Model_ShippingAndTax extends Bolt_Boltpay_Model_Abstract
                     "tax_amount" => abs(round($shippingAddress->getTaxAmount() * 100))
                 );
 
+                if ($adjustedShippingAmount < 0) {
+                    $metaData = array(
+                        'shipping_amount'   => $quote->getShippingAddress()->getShippingAmount(),
+                        'original_discount_total'   => $originalDiscountTotal,
+                        'adjusted_shipping_amount'   => $adjustedShippingAmount,
+                        'quote' => var_export($quote->debug(), true)
+                    );
+                    $email = $quote->getShippingAddress()->getEmail();
+                    $exception =  new Exception("After event bolt_boltpay_filter_adjusted_shipping_amount: Customer $email estimated shipping with a negative amount value ($adjustedShippingAmount)");
+
+                    $this->boltHelper()->notifyException($exception, array_merge($metaData,$option));
+                    $this->boltHelper()->logException($exception,  array_merge($metaData,$option));
+                }
+
                 $response['shipping_options'][] = $option;
 
                 Mage::dispatchEvent(
@@ -391,6 +405,20 @@ class Bolt_Boltpay_Model_ShippingAndTax extends Bolt_Boltpay_Model_Abstract
     public function getAdjustedShippingAmount($originalDiscountTotal, $quote, $boltOrder = null ) {
         $newDiscountTotal = $quote->getSubtotal() - $quote->getSubtotalWithDiscount();
         $adjustedShippingAmount = $quote->getShippingAddress()->getShippingAmount() + $originalDiscountTotal - $newDiscountTotal;
+
+        if ($adjustedShippingAmount < 0) {
+            $metaData = array(
+                'shipping_amount'   => $quote->getShippingAddress()->getShippingAmount(),
+                'original_discount_total'   => $originalDiscountTotal,
+                'adjusted_shipping_amount'   => $adjustedShippingAmount,
+                'quote' => var_export($quote->debug(), true)
+            );
+            $email = $quote->getShippingAddress()->getEmail();
+            $exception =  new Exception("Before event bolt_boltpay_filter_adjusted_shipping_amount: Customer $email estimated shipping with a negative amount value ($adjustedShippingAmount)");
+
+            $this->boltHelper()->notifyException($exception, $metaData);
+            $this->boltHelper()->logException($exception, $metaData);
+        }
 
         return $this->boltHelper()->doFilterEvent(
             'bolt_boltpay_filter_adjusted_shipping_amount',
